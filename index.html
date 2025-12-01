@@ -104,6 +104,7 @@
             <div class="modal-body">
                 <div class="memory-detail">
                     <div id="detailIcon" class="bounce-icon"></div>
+                    <div id="detailImage" class="detail-image-container"></div>
                     <div id="detailContent"></div>
                 </div>
             </div>
@@ -123,6 +124,10 @@
                     <div id="singleMode" class="form-mode active">
                         <input class="input-styled" id="memoryTitle" placeholder="Título...">
                         <textarea class="input-styled" id="memoryContent" rows="5" placeholder="Mensaje..."></textarea>
+                        <div class="input-group">
+                            <label>Imagen (opcional)</label>
+                            <input type="file" class="input-styled" id="memoryImage" accept="image/*">
+                        </div>
                         <select class="input-styled" id="memoryIcon">
                             <option value="random">🎲 Sorpresa</option>
                             <option value="💝">💝 Corazón</option>
@@ -155,7 +160,7 @@
         </div>
     </div>
 
-    <script type="module" src="app.js?v=19"></script>
+    <script type="module" src="app.js?v=20"></script>
 </body>
 
 </html>

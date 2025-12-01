@@ -1,6 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc, query, orderBy, updateDoc, deleteDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAVOMNM0dvyBBG22jFMbZgOxuEAQAE11kY",
@@ -15,6 +16,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
+const storage = getStorage(app);
 
 class ThemeManager {
     constructor() {
@@ -64,9 +66,11 @@ class MemoryManager {
         }
         return false;
     }
-    async add(title, content, icon) {
+    async add(title, content, icon, imageUrl = null) {
         if (icon === 'random') icon = this.emojis[Math.floor(Math.random() * this.emojis.length)];
-        await addDoc(collection(db, 'memories'), { title, content, icon, createdAt: Date.now() });
+        const data = { title, content, icon, createdAt: Date.now() };
+        if (imageUrl) data.imageUrl = imageUrl;
+        await addDoc(collection(db, 'memories'), data);
     }
     async addBulk(text) {
         const lines = text.split('\n');
@@ -86,9 +90,10 @@ class MemoryManager {
         if (current.title && current.content) await this.add(current.title, current.content, 'random');
     }
     async delete(id) { await deleteDoc(doc(db, 'memories', id)); }
-    async update(id, title, content, icon) {
+    async update(id, title, content, icon, imageUrl = null) {
         const updates = { title, content };
         if (icon && icon !== 'random') updates.icon = icon;
+        if (imageUrl) updates.imageUrl = imageUrl;
         await updateDoc(doc(db, 'memories', id), updates);
     }
 }
@@ -199,6 +204,15 @@ class App {
         document.getElementById('detailTitle').textContent = m.title;
         document.getElementById('detailContent').textContent = m.content;
         document.getElementById('detailIcon').textContent = m.icon;
+
+        // Mostrar imagen si existe
+        const imageContainer = document.getElementById('detailImage');
+        if (m.imageUrl) {
+            imageContainer.innerHTML = `<img src="${m.imageUrl}" alt="${m.title}" class="memory-image">`;
+        } else {
+            imageContainer.innerHTML = '';
+        }
+
         this.openModal('memoryDetailModal');
 
         if (this.currentUser) {
@@ -233,12 +247,27 @@ class App {
                 const t = document.getElementById('memoryTitle').value;
                 const c = document.getElementById('memoryContent').value;
                 const i = document.getElementById('memoryIcon').value;
+                const imageFile = document.getElementById('memoryImage').files[0];
+
+                let imageUrl = null;
+
+                // Subir imagen si existe
+                if (imageFile) {
+                    btn.textContent = "Subiendo imagen...";
+                    const timestamp = Date.now();
+                    const fileName = `memories/${timestamp}_${imageFile.name}`;
+                    const storageRef = ref(storage, fileName);
+                    await uploadBytes(storageRef, imageFile);
+                    imageUrl = await getDownloadURL(storageRef);
+                }
+
                 if (t && c) {
+                    btn.textContent = "Guardando...";
                     if (this.editingId) {
-                        await this.memories.update(this.editingId, t, c, i);
+                        await this.memories.update(this.editingId, t, c, i, imageUrl);
                         this.editingId = null;
                     } else {
-                        await this.memories.add(t, c, i);
+                        await this.memories.add(t, c, i, imageUrl);
                     }
                 }
             } else {
@@ -246,7 +275,7 @@ class App {
                 if (text) await this.memories.addBulk(text);
             }
             e.target.reset(); this.closeAllModals(); await this.refreshData();
-        } catch (e) { alert("Error: No tienes permiso"); }
+        } catch (e) { alert("Error: " + (e.message || "No tienes permiso")); }
         finally { btn.textContent = "Guardar"; btn.disabled = false; }
     }
 
