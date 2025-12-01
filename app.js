@@ -280,6 +280,8 @@ class AuthManager {
     isAdmin() { return this.currentUser && this.currentUser.role === 'admin'; }
 }
 
-window.deleteItem = async (id) => { if (confirm("¿Borrar?")) { await window.app.memories.delete(id); await window.app.refreshData(); } };
-window.editItem = (id) => { window.app.editMemory(id); };
-window.app = new App();
+document.addEventListener('DOMContentLoaded', () => {
+    window.app = new App();
+    window.deleteItem = async (id) => { if (confirm("¿Borrar?")) { await window.app.memories.delete(id); await window.app.refreshData(); } };
+    window.editItem = (id) => { window.app.editMemory(id); };
+});
