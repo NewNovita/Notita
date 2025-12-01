@@ -5,29 +5,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Para ti</title>
-    <!-- v=11 para forzar la actualización -->
-    <link rel="stylesheet" href="styles.css?v=11">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Fonts elegantes -->
     <link
-        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Outfit:wght@300;400;500;600&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Outfit:wght@300;400;600&display=swap"
         rel="stylesheet">
+    <!-- Actualización de estilos v=18 -->
+    <link rel="stylesheet" href="styles.css?v=18">
 </head>
 
 <body>
-    <!-- PANTALLA DE LOGIN -->
-    <div id="loginScreen" class="screen active">
-        <!-- Fondo animado login -->
-        <div class="floating-bg">
-            <span class="bg-icon" style="top:80%; left:10%; animation-delay:0s">💝</span>
-            <span class="bg-icon" style="top:20%; left:80%; animation-delay:2s">✨</span>
-            <span class="bg-icon" style="top:50%; left:50%; animation-delay:4s">🌙</span>
-        </div>
 
+    <!-- FONDO ANIMADO -->
+    <div id="memoriesCanvas" class="memories-canvas"></div>
+
+    <!-- PANTALLA LOGIN -->
+    <div id="loginScreen" class="screen active">
         <div class="login-container">
             <h1 class="login-title">Para ti</h1>
-            <p class="login-subtitle">Un rinconcito especial para nosotros</p>
-
+            <p class="login-subtitle">Nuestro rinconcito especial ✨</p>
             <div class="login-form">
                 <div class="input-group">
                     <label>Usuario</label>
@@ -35,44 +30,41 @@
                 </div>
                 <div class="input-group">
                     <label>Contraseña</label>
-                    <input type="password" id="password" placeholder="Nuestra clave secreta">
+                    <input type="password" id="password" placeholder="Tu clave secreta">
                 </div>
-                <button class="btn-primary" id="loginBtn">Entrar al corazón 💝</button>
+                <button class="btn-primary" id="loginBtn">Revisar notas 💝</button>
             </div>
+        </div>
+        <!-- Decoración flotante -->
+        <div class="floating-deco">
+            <span style="position:fixed; top:15%; left:10%; font-size:2rem; animation:float 6s infinite">🌸</span>
+            <span style="position:fixed; top:80%; left:85%; font-size:2rem; animation:float 7s infinite">🦋</span>
         </div>
     </div>
 
     <!-- PANTALLA PRINCIPAL -->
     <div id="mainScreen" class="screen">
-        <!-- Canvas de burbujas -->
-        <div class="memories-canvas" id="memoriesCanvas"></div>
-
         <div class="app-container">
             <header class="app-header">
                 <div class="header-content">
                     <h1 class="app-title">Para ti</h1>
                     <div class="header-actions">
-                        <!-- Botón Modo Noche (Funcionalidad arreglada) -->
                         <button class="btn-icon" id="themeToggle">
-                            <span class="icon-sun">☀️</span>
-                            <span class="icon-moon" style="display:none">🌙</span>
+                            <span class="icon-sun">☀️</span><span class="icon-moon" style="display:none">🌙</span>
                         </button>
-
-                        <span class="user-badge" id="userBadge"></span>
-                        <button class="btn-icon" id="logoutBtn">✕</button>
+                        <span class="user-badge" id="userBadge">Tú</span>
+                        <button class="btn-icon" id="logoutBtn" title="Salir">✕</button>
                     </div>
                 </div>
             </header>
 
             <main class="main-content">
-                <div class="memories-header">
-                    <div class="memories-counter">
-                        <span class="counter-text">CARTITAS EN EL AIRE:</span>
-                        <span class="counter-number" id="memoriesCount">0</span>
-                    </div>
+                <div class="memories-counter">
+                    <span class="counter-text">CARTITAS EN EL AIRE:</span>
+                    <span class="counter-number" id="memoriesCount">0</span>
                 </div>
 
-                <!-- Spotify Player -->
+                <!-- SPOTIFY -->
                 <div class="spotify-player">
                     <iframe
                         src="https://open.spotify.com/embed/playlist/6NIhSDifKPUVZmdJQR3dVB?utm_source=generator&theme=0"
@@ -81,23 +73,22 @@
                         loading="lazy"></iframe>
                 </div>
 
-                <!-- Botón Principal -->
+                <!-- BOTÓN BAÚL -->
                 <button class="btn-memories" id="myMemoriesBtn">
-                    <span>El Baúl de Nuestros Momentos 💝</span>
+                    <span>El Baúl de Notas 💝</span>
                 </button>
 
-                <!-- Botón Admin -->
+                <!-- BOTÓN ADMIN -->
                 <button class="btn-add-memory hidden" id="addMemoryBtn">+</button>
             </main>
         </div>
     </div>
 
-    <!-- MODALES (Tal cual te gustaban) -->
+    <!-- MODALES -->
     <div id="memoriesModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>El Baúl de Recuerdos</h2>
-                <button class="btn-close" id="closeMemoriesModal">✕</button>
+                <h2>El Baúl 💌</h2><button class="btn-close" id="closeMemoriesModal">✕</button>
             </div>
             <div class="modal-body">
                 <div id="memoriesList" class="memories-list"></div>
@@ -105,64 +96,10 @@
         </div>
     </div>
 
-    <div id="addMemoryModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Nueva Cartita</h2>
-                <button class="btn-close" id="closeAddModal">✕</button>
-            </div>
-            <div class="modal-body">
-                <form id="addMemoryForm">
-                    <div class="form-mode-toggle">
-                        <button type="button" class="mode-btn active" data-mode="single">Una nota</button>
-                        <button type="button" class="mode-btn" data-mode="bulk">Masivas</button>
-                    </div>
-
-                    <div id="singleMode" class="form-mode active">
-                        <div class="input-group">
-                            <label>Título</label>
-                            <input type="text" id="memoryTitle" placeholder="Ej: Aquella vez que...">
-                        </div>
-                        <div class="input-group">
-                            <label>Mensaje</label>
-                            <textarea id="memoryContent" rows="5" placeholder="Escribe con el corazón..."></textarea>
-                        </div>
-                        <div class="input-group">
-                            <label>Icono</label>
-                            <select id="memoryIcon">
-                                <option value="random">🎲 Sorpresa</option>
-                                <option value="💝">💝 Corazón</option>
-                                <option value="🧸">🧸 Osito</option>
-                                <option value="💌">💌 Carta</option>
-                                <option value="🌹">🌹 Rosa</option>
-                                <option value="🐧">🐧 Pingüino</option>
-                                <option value="🌙">🌙 Luna</option>
-                                <option value="✨">✨ Brillo</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div id="bulkMode" class="form-mode">
-                        <div class="input-group">
-                            <label>Notas Múltiples</label>
-                            <p style="font-size:0.8rem; color:var(--color-text-secondary); margin-bottom:5px">Formato:
-                                titulo: X contenido: Y</p>
-                            <textarea id="bulkText" rows="10"
-                                placeholder="titulo: Hola&#10;contenido: Te quiero"></textarea>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn-primary" id="submitMemoryBtn">Guardar en el Baúl</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
     <div id="memoryDetailModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="detailTitle"></h2>
-                <button class="btn-close" id="closeDetailModal">✕</button>
+                <h2 id="detailTitle"></h2><button class="btn-close" id="closeDetailModal">✕</button>
             </div>
             <div class="modal-body">
                 <div class="memory-detail">
@@ -173,29 +110,51 @@
         </div>
     </div>
 
-    <div id="profileModal" class="modal">
+    <div id="addMemoryModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Mi Perfil</h2>
-                <button class="btn-close" id="closeProfileModal">✕</button>
+                <h2>Escribir</h2><button class="btn-close" id="closeAddModal">✕</button>
             </div>
             <div class="modal-body">
-                <form id="profileForm">
-                    <div class="input-group">
-                        <label>Nombre</label>
-                        <input type="text" id="newDisplayName">
+                <form id="addMemoryForm">
+                    <div class="form-mode-toggle"><button type="button" class="mode-btn active"
+                            data-mode="single">Una</button><button type="button" class="mode-btn"
+                            data-mode="bulk">Masivas</button></div>
+                    <div id="singleMode" class="form-mode active">
+                        <input class="input-styled" id="memoryTitle" placeholder="Título...">
+                        <textarea class="input-styled" id="memoryContent" rows="5" placeholder="Mensaje..."></textarea>
+                        <select class="input-styled" id="memoryIcon">
+                            <option value="random">🎲 Sorpresa</option>
+                            <option value="💝">💝 Corazón</option>
+                            <option value="💌">💌 Carta</option>
+                        </select>
                     </div>
-                    <div class="input-group">
-                        <label>Nueva Contraseña</label>
-                        <input type="password" id="newPassword">
-                    </div>
-                    <button type="submit" class="btn-primary">Actualizar</button>
+                    <div id="bulkMode" class="form-mode"><textarea class="input-styled" id="bulkText"
+                            rows="8"></textarea></div>
+                    <button type="submit" class="btn-primary">Guardar</button>
                 </form>
             </div>
         </div>
     </div>
 
-    <script type="module" src="app.js?v=11"></script>
+    <div id="profileModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Perfil 👤</h2><button class="btn-close" id="closeProfileModal">✕</button>
+            </div>
+            <div class="modal-body">
+                <form id="profileForm">
+                    <div class="input-group"><label>Nombre lindo</label><input type="text" class="input-styled"
+                            id="newDisplayName"></div>
+                    <div class="input-group"><label>Nueva contraseña</label><input type="password" class="input-styled"
+                            id="newPassword"></div>
+                    <button type="submit" class="btn-primary">Guardar Cambios</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="app.js?v=18"></script>
 </body>
 
 </html>

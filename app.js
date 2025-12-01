@@ -1,4 +1,3 @@
-// Importamos Auth además de Firestore
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc, query, orderBy, updateDoc, deleteDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -15,9 +14,8 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const auth = getAuth(app); // Inicializamos Auth
+const auth = getAuth(app);
 
-// --- GESTOR DE TEMA ---
 class ThemeManager {
     constructor() {
         this.btn = document.getElementById('themeToggle');
@@ -33,93 +31,61 @@ class ThemeManager {
     }
     apply() {
         document.body.setAttribute('data-theme', this.current);
-        if (this.current === 'dark') {
-            this.sun.style.display = 'none';
-            this.moon.style.display = 'block';
-        } else {
-            this.sun.style.display = 'block';
-            this.moon.style.display = 'none';
-        }
+        if (this.current === 'dark') { this.sun.style.display = 'none'; this.moon.style.display = 'block'; }
+        else { this.sun.style.display = 'block'; this.moon.style.display = 'none'; }
     }
 }
 
-// --- GESTOR DE MEMORIAS ---
 class MemoryManager {
     constructor() {
         this.memories = [];
         this.readMemories = [];
         this.emojis = ['💝', '🌸', '🌙', '✨', '💐', '🌺', '🦋', '💕', '🎵', '📷', '🎁', '☁️', '🧸', '🍫', '💌', '🌹', '🐧', '🦄', '🍩', '🚀'];
     }
-
     async loadAll() {
         try {
             const q = query(collection(db, 'memories'), orderBy('createdAt', 'desc'));
             const snap = await getDocs(q);
             this.memories = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        } catch (e) { console.error(e); }
+        } catch (e) { }
     }
-
     async loadUser(username) {
         try {
-            // Si es admin, cargamos el doc 'admin', si es lucianita, el doc 'lucianita'
             const d = await getDoc(doc(db, 'users', username));
             if (d.exists()) this.readMemories = d.data().readMemories || [];
-        } catch (e) { console.error(e); }
+        } catch (e) { }
     }
-
-    getUnread() {
-        return this.memories.filter(m => !this.readMemories.includes(m.id));
-    }
-
+    getUnread() { return this.memories.filter(m => !this.readMemories.includes(m.id)); }
     async markRead(id, username) {
         if (!this.readMemories.includes(id)) {
             this.readMemories.push(id);
-            // Intentamos guardar la lectura en la BD
-            try {
-                await updateDoc(doc(db, 'users', username), { readMemories: arrayUnion(id) });
-            } catch (e) { console.log("Lectura local (sin permisos de escritura)"); }
+            try { await updateDoc(doc(db, 'users', username), { readMemories: arrayUnion(id) }); } catch (e) { }
             return true;
         }
         return false;
     }
-
     async add(title, content, icon) {
         if (icon === 'random') icon = this.emojis[Math.floor(Math.random() * this.emojis.length)];
-        // Esto ahora solo funcionará si estás logueado con Auth real
         await addDoc(collection(db, 'memories'), { title, content, icon, createdAt: Date.now() });
     }
-
     async addBulk(text) {
         const lines = text.split('\n');
         let current = { title: '', content: '' };
         const tReg = /^[\d\.\-\s]*t[íi]tulo\s*:\s*(.*)/i;
         const cReg = /^[\d\.\-\s]*contenido\s*:\s*(.*)/i;
-
         for (const line of lines) {
             const t = line.trim();
             if (!t) continue;
-            const tM = t.match(tReg);
-            const cM = t.match(cReg);
-
+            const tM = t.match(tReg); const cM = t.match(cReg);
             if (tM) {
-                if (current.title && current.content) {
-                    await this.add(current.title, current.content, 'random');
-                    current = { title: '', content: '' };
-                }
+                if (current.title && current.content) { await this.add(current.title, current.content, 'random'); current = { title: '', content: '' }; }
                 current.title = tM[1].trim();
-            } else if (cM) {
-                current.content = cM[1].trim();
-            } else {
-                if (current.content) current.content += '\n' + t;
-            }
+            } else if (cM) { current.content = cM[1].trim(); }
+            else { if (current.content) current.content += '\n' + t; }
         }
         if (current.title && current.content) await this.add(current.title, current.content, 'random');
     }
-
-    async delete(id) {
-        await deleteDoc(doc(db, 'memories', id));
-    }
-
+    async delete(id) { await deleteDoc(doc(db, 'memories', id)); }
     async updateProfile(username, displayName, password) {
         const updates = {};
         if (displayName) updates.displayName = displayName;
@@ -128,7 +94,6 @@ class MemoryManager {
     }
 }
 
-// --- CANVAS ---
 class MemoriesCanvas {
     constructor(manager) {
         this.manager = manager;
@@ -144,34 +109,35 @@ class MemoriesCanvas {
             if (!this.container.querySelector(`[data-id="${m.id}"]`)) {
                 const b = document.createElement('div');
                 b.className = 'memory-bubble forming';
-                b.dataset.id = m.id; b.textContent = m.icon;
-                b.style.left = Math.random() * 80 + 10 + '%';
+                b.dataset.id = m.id;
+                b.textContent = m.icon;
+                b.style.left = Math.random() * 85 + 5 + '%';
                 b.style.top = Math.random() * 80 + 10 + '%';
                 b.style.setProperty('--duration', (6 + Math.random() * 6) + 's');
                 b.style.setProperty('--delay', (Math.random() * -5) + 's');
-                b.onclick = (e) => { e.stopPropagation(); onClick(m.id); };
+                b.onclick = (e) => {
+                    e.stopPropagation(); e.preventDefault();
+                    b.classList.add('popping');
+                    onClick(m.id);
+                };
                 this.container.appendChild(b);
             }
         });
     }
 }
 
-// --- APP PRINCIPAL (CON AUTH REAL) ---
 class App {
     constructor() {
         this.theme = new ThemeManager();
+        this.auth = new AuthManager();
         this.memories = new MemoryManager();
         this.canvas = new MemoriesCanvas(this.memories);
         this.currentUser = null;
         this.init();
     }
-
     init() {
         document.getElementById('loginBtn').onclick = () => this.handleLogin();
-        document.getElementById('logoutBtn').onclick = () => {
-            signOut(auth); // Cerrar sesión real de Firebase
-            window.location.reload();
-        };
+        document.getElementById('logoutBtn').onclick = () => { this.auth.logout(); window.location.reload(); };
 
         document.getElementById('myMemoriesBtn').onclick = () => this.openModal('memoriesModal');
         document.getElementById('addMemoryBtn').onclick = () => this.openModal('addMemoryModal');
@@ -191,65 +157,27 @@ class App {
         document.getElementById('profileForm').onsubmit = (e) => this.handleProfile(e);
     }
 
-    // LOGIN HÍBRIDO (Visual + Auth Real)
     async handleLogin() {
         const u = document.getElementById('username').value.trim();
         const p = document.getElementById('password').value;
-
         try {
-            // 1. Verificar visualmente con Firestore (Para obtener el nombre 'Lucianita' o 'Admin')
-            const userDoc = await getDoc(doc(db, 'users', u));
-
-            if (!userDoc.exists()) {
-                alert("Usuario no encontrado 👻");
-                return;
-            }
-
-            const userData = userDoc.data();
-
-            // 2. Si es Admin, hacemos LOGIN REAL en Firebase Auth
-            if (userData.role === 'admin') {
-                // Usamos el email que creaste en el paso 1 y la contraseña que escribiste en el input
-                try {
-                    await signInWithEmailAndPassword(auth, "admin@lucinotes.com", p);
-                    // Si pasa aquí, la contraseña es correcta
-                } catch (authError) {
-                    alert("Contraseña incorrecta 🔒");
-                    return;
-                }
-            } else {
-                // Si es Lucianita, usamos la validación simple antigua
-                if (userData.password !== p) {
-                    alert("Contraseña incorrecta 🔒");
-                    return;
-                }
-            }
-
-            // Login exitoso
-            this.currentUser = { username: u, ...userData };
-            this.startApp();
-
-        } catch (e) {
-            console.error(e);
-            alert("Error de conexión");
-        }
-    }
-
-    async startApp() {
-        document.getElementById('loginScreen').classList.remove('active');
-        document.getElementById('mainScreen').classList.add('active');
-        document.getElementById('userBadge').textContent = this.currentUser.displayName;
-
-        if (this.currentUser.role === 'admin') {
-            document.getElementById('addMemoryBtn').classList.remove('hidden');
-        }
-
-        await this.refreshData();
+            const user = await this.auth.login(u, p);
+            this.currentUser = user;
+            document.getElementById('loginScreen').classList.remove('active');
+            document.getElementById('mainScreen').classList.add('active');
+            document.getElementById('userBadge').textContent = user.displayName;
+            if (this.auth.isAdmin()) document.getElementById('addMemoryBtn').classList.remove('hidden');
+            await this.refreshData();
+        } catch (e) { alert(e.message); }
     }
 
     async refreshData() {
         await this.memories.loadAll();
-        await this.memories.loadUser(this.currentUser.username);
+        if (this.currentUser) await this.memories.loadUser(this.currentUser.username);
+        this.refreshLocal();
+    }
+
+    refreshLocal() {
         document.getElementById('memoriesCount').textContent = this.memories.getUnread().length;
         this.canvas.render((id) => this.readMemory(id));
         this.renderList();
@@ -262,16 +190,19 @@ class App {
         document.getElementById('detailContent').textContent = m.content;
         document.getElementById('detailIcon').textContent = m.icon;
         this.openModal('memoryDetailModal');
-        if (await this.memories.markRead(id, this.currentUser.username)) await this.refreshData();
+
+        if (this.currentUser) {
+            this.memories.readMemories.push(id);
+            this.refreshLocal();
+            this.memories.markRead(id, this.currentUser.username);
+        }
     }
 
     renderList() {
         const list = document.getElementById('memoriesList');
-        const isAdmin = this.currentUser.role === 'admin';
+        const isAdmin = this.auth.isAdmin();
         const items = isAdmin ? this.memories.memories : this.memories.memories.filter(m => this.memories.readMemories.includes(m.id));
-
         if (items.length === 0) { list.innerHTML = `<div style="text-align:center;padding:2rem;opacity:0.6">Vacío...</div>`; return; }
-
         list.innerHTML = items.map(m => `
             <div class="memory-card read">
                 <div style="display:flex;justify-content:space-between;align-items:center">
@@ -286,9 +217,7 @@ class App {
         e.preventDefault();
         const mode = document.querySelector('.mode-btn.active').dataset.mode;
         const btn = document.getElementById('submitMemoryBtn');
-        const originalText = btn.textContent;
         btn.textContent = "Guardando..."; btn.disabled = true;
-
         try {
             if (mode === 'single') {
                 const t = document.getElementById('memoryTitle').value;
@@ -300,12 +229,8 @@ class App {
                 if (text) await this.memories.addBulk(text);
             }
             e.target.reset(); this.closeAllModals(); await this.refreshData();
-        } catch (err) {
-            alert("Error: No tienes permiso o falló la conexión.");
-            console.error(err);
-        } finally {
-            btn.textContent = originalText; btn.disabled = false;
-        }
+        } catch (e) { alert("Error: No tienes permiso"); }
+        finally { btn.textContent = "Guardar"; btn.disabled = false; }
     }
 
     async handleProfile(e) {
@@ -313,14 +238,49 @@ class App {
         const name = document.getElementById('newDisplayName').value;
         const pass = document.getElementById('newPassword').value;
         if (name || pass) {
-            await this.memories.updateProfile(this.currentUser.username, name, pass);
-            if (name) { this.currentUser.displayName = name; document.getElementById('userBadge').textContent = name; }
-            alert("Perfil actualizado"); this.closeAllModals();
+            await this.auth.updateProfile(name, pass);
+            if (name) {
+                this.currentUser.displayName = name;
+                document.getElementById('userBadge').textContent = name;
+            }
+            alert("Perfil actualizado ✨"); this.closeAllModals();
         }
     }
 
     openModal(id) { document.getElementById(id).classList.add('active'); }
     closeAllModals() { document.querySelectorAll('.modal').forEach(m => m.classList.remove('active')); }
+}
+
+class AuthManager {
+    constructor() { this.currentUser = null; }
+    async login(username, password) {
+        username = username.toLowerCase().trim();
+        if (username === 'admin') {
+            try {
+                await signInWithEmailAndPassword(auth, "admin@lucinotes.com", password);
+                this.currentUser = { username: 'admin', role: 'admin', displayName: '👑 Admin' };
+                return this.currentUser;
+            } catch (e) { throw new Error("Contraseña incorrecta"); }
+        } else {
+            const d = await getDoc(doc(db, 'users', username));
+            if (!d.exists()) throw new Error("Usuario no encontrado");
+            const data = d.data();
+            if (data.password === password) {
+                this.currentUser = { username: data.username, role: data.role || 'normal', displayName: data.displayName || 'Lucianita' };
+                return this.currentUser;
+            } else { throw new Error("Contraseña incorrecta"); }
+        }
+    }
+    async updateProfile(name, pass) {
+        if (!this.currentUser) return;
+        const updates = {};
+        if (name) updates.displayName = name;
+        if (pass && this.currentUser.role !== 'admin') updates.password = pass;
+        await updateDoc(doc(db, 'users', this.currentUser.username), updates);
+        if (name) this.currentUser.displayName = name;
+    }
+    logout() { this.currentUser = null; signOut(auth).catch(() => { }); }
+    isAdmin() { return this.currentUser && this.currentUser.role === 'admin'; }
 }
 
 window.deleteItem = async (id) => { if (confirm("¿Borrar?")) { await window.app.memories.delete(id); await window.app.refreshData(); } };

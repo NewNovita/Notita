@@ -1,99 +1,151 @@
 /* =========================================
-   1. VARIABLES & SISTEMA DE DISEÑO
+   1. COLORES Y TEMA
    ========================================= */
 :root {
-    /* --- TEMA CLARO (Tu diseño original) --- */
-    --color-primary: hsl(340, 80%, 88%);
-    --color-primary-light: hsl(340, 85%, 93%);
-    --color-primary-dark: hsl(340, 70%, 78%);
-    --color-accent: hsl(320, 70%, 65%);
+    /* --- DÍA --- */
+    --bg-gradient: linear-gradient(180deg, #ffdde1 0%, #ee9ca7 100%);
+    --surface: rgba(255, 255, 255, 0.95);
+    --surface-solid: #fff;
+    --text-primary: #7d4e57;
+    --text-secondary: #a87c85;
+    --primary: #ff8fab;
+    --accent: #ffc2d1;
+    --border-color: #ffe5ec;
+    --bubble-bg: rgba(255, 255, 255, 0.6);
+    --bubble-border: 2px solid #fff;
 
-    --color-bg-main: hsl(340, 100%, 97%);
-    --color-bg-secondary: hsl(340, 60%, 95%);
-    --color-surface: rgba(255, 255, 255, 0.92);
-
-    --color-text-primary: hsl(340, 40%, 25%);
-    --color-text-secondary: hsl(340, 30%, 45%);
-    --color-text-muted: hsl(340, 20%, 60%);
-
-    --gradient-primary: linear-gradient(135deg, hsl(340, 80%, 88%) 0%, hsl(320, 70%, 85%) 100%);
-    --gradient-romantic: linear-gradient(135deg, hsl(340, 100%, 97%) 0%, hsl(330, 90%, 95%) 50%, hsl(310, 85%, 96%) 100%);
-
-    --shadow-sm: 0 2px 8px rgba(131, 58, 80, 0.08);
-    --shadow-md: 0 4px 16px rgba(131, 58, 80, 0.12);
-    --shadow-lg: 0 8px 32px rgba(131, 58, 80, 0.16);
-
-    --font-serif: 'Playfair Display', serif;
-    --font-sans: 'Outfit', sans-serif;
-
-    --radius-sm: 8px;
-    --radius-md: 16px;
-    --radius-lg: 24px;
-    --radius-xl: 50px;
-    --header-height: 70px;
+    /* Input en día: Blanco */
+    --input-bg: #fff;
+    --input-text: #7d4e57;
 }
 
-/* --- TEMA OSCURO (GALAXY PASTEL - NUEVO) --- */
 [data-theme="dark"] {
-    /* Tonos oscuros pero suaves (no negro puro) */
-    --color-primary: #957DAD;
-    /* Morado pastel */
-    --color-primary-light: #B39DDB;
-    --color-primary-dark: #6A5B7E;
-    --color-accent: #E0BBE4;
-    /* Lila suave */
+    /* --- NOCHE (Sueño Profundo Pastel) --- */
+    --bg-gradient: linear-gradient(135deg, #4a304d 0%, #2e2a45 100%);
+    --surface: rgba(60, 45, 65, 0.95);
+    --surface-solid: #45354a;
 
-    --color-bg-main: #2D1B2E;
-    --color-bg-secondary: #3D2B3E;
-    --color-surface: rgba(45, 27, 46, 0.95);
-    /* Ciruela oscuro */
+    --text-primary: #ffecf2;
+    --text-secondary: #d8c2d6;
 
-    --color-text-primary: #F3E5F5;
-    /* Blanco lavanda */
-    --color-text-secondary: #D1C4E9;
-    --color-text-muted: #9575CD;
+    --primary: #ffadc6;
+    --accent: #cdb4db;
+    --border-color: #6d5070;
 
-    --gradient-primary: linear-gradient(135deg, #957DAD 0%, #E0BBE4 100%);
-    --gradient-romantic: linear-gradient(135deg, #2D1B2E 0%, #201A23 100%);
+    --bubble-bg: rgba(255, 255, 255, 0.15);
+    --bubble-border: 1px solid rgba(255, 192, 203, 0.3);
 
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
-    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.3);
-    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.4);
+    /* Input en noche: Oscuro Sólido (CORREGIDO PARA QUE NO SEA BLANCO) */
+    --input-bg: #322335;
+    --input-text: #fff;
 }
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
 }
 
 body {
-    font-family: var(--font-sans);
-    background: var(--gradient-romantic);
-    color: var(--color-text-primary);
-    min-height: 100vh;
-    overflow-x: hidden;
-    line-height: 1.5;
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg-gradient);
+    background-attachment: fixed;
+    color: var(--text-primary);
+    height: 100vh;
+    overflow: hidden;
     transition: background 0.5s ease, color 0.5s ease;
-    /* Transición suave de tema */
 }
 
 /* =========================================
-   2. PANTALLAS Y TRANSICIONES
+   2. BURBUJAS
    ========================================= */
-.screen {
-    position: fixed;
+.memories-canvas {
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    height: 100vh;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.memory-bubble {
+    position: absolute;
+    width: 75px;
+    height: 75px;
+    border-radius: 50%;
+    background: var(--bubble-bg);
+    border: var(--bubble-border);
+    backdrop-filter: blur(4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.8rem;
+    pointer-events: auto;
+    cursor: pointer;
+    z-index: 5;
+    animation: floatBubble var(--duration, 6s) ease-in-out infinite;
+    animation-delay: var(--delay, 0s);
+    transition: transform 0.4s, opacity 0.4s;
+}
+
+.memory-bubble:active {
+    transform: scale(0.9);
+}
+
+.memory-bubble.forming {
+    animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, floatBubble var(--duration, 6s) ease-in-out infinite 0.6s;
+}
+
+.memory-bubble.popping {
+    transform: scale(1.6);
+    opacity: 0;
+    pointer-events: none;
+}
+
+@keyframes floatBubble {
+    0% {
+        transform: translateY(0px) translateX(0px) rotate(0deg);
+    }
+
+    33% {
+        transform: translateY(-20px) translateX(10px) rotate(5deg);
+    }
+
+    66% {
+        transform: translateY(10px) translateX(-10px) rotate(-5deg);
+    }
+
+    100% {
+        transform: translateY(0px) translateX(0px) rotate(0deg);
+    }
+}
+
+@keyframes popIn {
+    from {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* =========================================
+   3. ELEMENTOS FLOTANTES & RESPONSIVIDAD
+   ========================================= */
+.screen {
+    position: fixed;
+    inset: 0;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.4s ease, visibility 0.4s ease;
-    overflow-y: auto;
+    transition: 0.5s;
     z-index: 10;
-    /* Subido para estar sobre el canvas */
+    pointer-events: none;
+    overflow-y: auto;
 }
 
 .screen.active {
@@ -101,144 +153,210 @@ body {
     visibility: visible;
 }
 
+.app-container {
+    pointer-events: none;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.app-header,
+.btn-memories,
+.btn-add-memory,
+.spotify-player {
+    pointer-events: auto;
+}
+
+/* --- PC: Distribución separada --- */
+/* Spotify a la izquierda */
+.spotify-player {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    width: 320px;
+    z-index: 90;
+    transition: 0.3s;
+}
+
+.spotify-player iframe {
+    height: 80px !important;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    background: var(--surface);
+}
+
+/* Botón Baúl a la derecha */
+.btn-memories {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    padding: 1.2rem 2rem;
+    background: var(--surface-solid);
+    color: var(--primary);
+    border: none;
+    border-radius: 50px;
+    font-weight: 800;
+    font-size: 1.1rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    z-index: 100;
+}
+
+.btn-add-memory {
+    position: fixed;
+    bottom: 120px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    background: var(--surface-solid);
+    color: var(--primary);
+    border-radius: 50%;
+    border: none;
+    font-size: 2rem;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    z-index: 95;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+/* --- MÓVIL: Todo centrado abajo --- */
+@media (max-width: 768px) {
+
+    /* Botón Baúl: Abajo del todo (lo más importante) */
+    .btn-memories {
+        left: 50%;
+        bottom: 25px;
+        /* Al alcance del dedo */
+        width: 90%;
+        transform: translateX(-50%);
+        right: auto;
+    }
+
+    /* Spotify: Justo encima del botón, pequeño */
+    .spotify-player {
+        left: 50%;
+        bottom: 100px;
+        /* Encima del botón */
+        width: 90%;
+        transform: translateX(-50%) scale(0.95);
+        transform-origin: bottom center;
+    }
+
+    .btn-add-memory {
+        bottom: 190px;
+        right: 20px;
+    }
+
+    .login-title {
+        font-size: 3.5rem;
+    }
+}
+
 /* =========================================
-   3. PANTALLA DE LOGIN
+   4. UI GENERAL
    ========================================= */
+/* Login */
 .login-container {
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 100vh;
-    padding: 1.5rem;
-    position: relative;
-    z-index: 20;
+    padding: 2rem;
+    pointer-events: auto;
+    background: var(--bg-gradient);
 }
 
 .login-title {
-    font-family: var(--font-serif);
-    font-size: clamp(2.5rem, 8vw, 4rem);
-    font-style: italic;
-    text-align: center;
-    margin-bottom: 0.5rem;
-    color: var(--color-text-primary);
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    font-family: 'Dancing Script', cursive;
+    font-size: 4.5rem;
+    color: #fff;
+    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 0;
 }
 
 .login-subtitle {
-    font-size: 1.1rem;
-    color: var(--color-text-secondary);
+    color: rgba(255, 255, 255, 0.9);
     margin-bottom: 2rem;
-    text-align: center;
+    font-size: 1.2rem;
 }
 
 .login-form {
-    background: var(--color-surface);
-    backdrop-filter: blur(10px);
-    padding: 2rem;
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-lg);
+    background: rgba(255, 255, 255, 0.95);
+    padding: 2.5rem;
+    border-radius: 30px;
     width: 100%;
-    max-width: 380px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    max-width: 350px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
 }
 
-.floating-bg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    pointer-events: none;
-    z-index: 1;
-}
-
-.bg-icon {
-    position: absolute;
-    font-size: 2rem;
-    opacity: 0.6;
-    animation: float 8s ease-in-out infinite;
-    animation-delay: var(--delay, 0s);
-}
-
-/* =========================================
-   4. ELEMENTOS DE FORMULARIO
-   ========================================= */
+/* Inputs bonitos y legibles */
 .input-group {
-    margin-bottom: 1.25rem;
+    margin-bottom: 1.2rem;
 }
 
 .input-group label {
     display: block;
     font-size: 0.85rem;
-    font-weight: 600;
+    font-weight: 700;
+    color: #888;
     margin-bottom: 0.5rem;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: var(--color-text-secondary);
+    letter-spacing: 1px;
 }
 
-.input-group input,
-.input-group textarea,
-.input-group select {
+input,
+textarea,
+select,
+.input-styled {
     width: 100%;
-    padding: 0.9rem 1rem;
-    border: 2px solid var(--color-primary-light);
-    border-radius: var(--radius-sm);
-    font-family: var(--font-sans);
-    font-size: 16px;
-    background: rgba(255, 255, 255, 0.1);
-    /* Ligeramente transparente para modo noche */
-    color: var(--color-text-primary);
-    transition: all 0.3s ease;
+    padding: 1rem;
+    border-radius: 15px;
+    border: 2px solid var(--border-color);
+    background: var(--input-bg);
+    /* Sólido en noche */
+    color: var(--input-text);
+    /* Blanco en noche */
+    font-family: 'Outfit', sans-serif;
+    font-size: 1rem;
+    outline: none;
+    transition: 0.3s;
 }
 
-.input-group input:focus,
-.input-group textarea:focus {
-    outline: none;
-    border-color: var(--color-accent);
-    box-shadow: 0 0 0 4px rgba(221, 136, 172, 0.15);
+input:focus {
+    border-color: var(--primary);
+    background: var(--surface-solid);
 }
 
 .btn-primary {
     width: 100%;
     padding: 1rem;
-    background: var(--gradient-primary);
-    color: #fff;
+    border-radius: 50px;
     border: none;
-    border-radius: var(--radius-md);
+    background: linear-gradient(90deg, #ff9a9e 0%, #fecfef 100%);
+    color: #fff;
     font-weight: 700;
-    font-size: 1rem;
+    font-size: 1.2rem;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    transition: transform 0.2s, box-shadow 0.2s;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    box-shadow: 0 5px 20px rgba(255, 154, 158, 0.4);
+    margin-top: 1rem;
+    transition: 0.2s;
 }
 
 .btn-primary:active {
     transform: scale(0.98);
 }
 
-/* =========================================
-   5. INTERFAZ PRINCIPAL (APP)
-   ========================================= */
 .app-header {
-    height: var(--header-height);
+    height: 80px;
     padding: 0 1.5rem;
-    background: var(--color-surface);
-    backdrop-filter: blur(12px);
     display: flex;
     align-items: center;
     justify-content: center;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: var(--shadow-sm);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
 }
 
 .header-content {
@@ -250,192 +368,77 @@ body {
 }
 
 .app-title {
-    font-family: var(--font-serif);
-    font-size: 1.5rem;
-    font-weight: 600;
-    font-style: italic;
+    font-family: 'Dancing Script', cursive;
+    font-size: 2.5rem;
+    color: var(--primary);
 }
 
 .header-actions {
     display: flex;
+    gap: 10px;
     align-items: center;
-    gap: 0.8rem;
-}
-
-.user-badge {
-    padding: 0.4rem 0.8rem;
-    background: var(--color-bg-secondary);
-    border-radius: var(--radius-xl);
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--color-accent);
-    border: 1px solid var(--color-primary-light);
-    cursor: pointer;
 }
 
 .btn-icon {
-    width: 38px;
-    height: 38px;
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
     border: none;
-    background: var(--color-bg-secondary);
-    color: var(--color-text-secondary);
+    background: var(--surface);
+    color: var(--text-primary);
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 1.2rem;
     cursor: pointer;
-    box-shadow: var(--shadow-sm);
-    transition: 0.2s;
+    transition: 0.3s;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
-/* =========================================
-   6. CONTENIDO
-   ========================================= */
+.user-badge {
+    background: var(--surface);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 700;
+    color: var(--primary);
+    pointer-events: auto;
+    cursor: pointer;
+}
+
 .main-content {
     padding: 1.5rem;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding-bottom: 160px;
+    text-align: center;
 }
 
 .memories-counter {
-    background: var(--color-surface);
+    background: var(--surface);
     padding: 0.8rem 1.5rem;
-    border-radius: var(--radius-xl);
-    display: inline-flex;
-    align-items: center;
-    gap: 0.8rem;
-    box-shadow: var(--shadow-sm);
+    border-radius: 50px;
+    display: inline-block;
     margin-bottom: 2rem;
-    animation: fadeInDown 0.6s ease;
-    width: 100%;
-    justify-content: center;
-}
-
-.counter-text {
-    font-weight: 600;
-    font-size: 0.9rem;
-    color: var(--color-text-secondary);
+    backdrop-filter: blur(5px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
 .counter-number {
     font-size: 1.5rem;
     font-weight: 800;
-    color: var(--color-accent);
+    color: var(--primary);
 }
 
-/* CANVAS DE BURBUJAS */
-.memories-canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-    pointer-events: none;
-    /* Está detrás de la UI pero delante del fondo */
-}
-
-.memory-icon {
-    position: absolute;
-    font-size: 2.5rem;
-    cursor: pointer;
-    pointer-events: auto;
-    animation: float var(--duration, 8s) ease-in-out infinite;
-    animation-delay: var(--delay, 0s);
-    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
-    transition: transform 0.2s;
-    z-index: 5;
-}
-
-.memory-icon:active {
-    transform: scale(1.3);
-}
-
-/* =========================================
-   7. ELEMENTOS FLOTANTES
-   ========================================= */
-.spotify-player {
-    position: fixed;
-    bottom: 90px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 90%;
-    max-width: 400px;
-    z-index: 90;
-    transition: all 0.3s ease;
-}
-
-.spotify-player iframe {
-    border-radius: 12px;
-    box-shadow: var(--shadow-md);
-    background: var(--color-surface);
-}
-
-.btn-memories {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 90%;
-    max-width: 400px;
-    padding: 1rem;
-    background: var(--color-text-primary);
-    color: var(--color-bg-main);
-    border: none;
-    border-radius: var(--radius-xl);
-    font-weight: 600;
-    font-size: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.8rem;
-    box-shadow: var(--shadow-lg);
-    cursor: pointer;
-    z-index: 100;
-    transition: bottom 0.3s ease;
-}
-
-.btn-add-memory {
-    position: fixed;
-    bottom: 250px;
-    right: 20px;
-    width: 56px;
-    height: 56px;
-    background: var(--color-surface);
-    color: var(--color-accent);
-    border-radius: 50%;
-    border: none;
-    box-shadow: var(--shadow-md);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 95;
-}
-
-.hidden {
-    display: none;
-}
-
-/* =========================================
-   8. MODALES
-   ========================================= */
 .modal {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.4);
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(5px);
     z-index: 1000;
     opacity: 0;
     visibility: hidden;
-    transition: all 0.3s ease;
+    transition: 0.3s;
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     justify-content: center;
+    pointer-events: auto;
 }
 
 .modal.active {
@@ -444,41 +447,46 @@ body {
 }
 
 .modal-content {
-    background: var(--color-surface);
-    width: 100%;
-    max-width: 600px;
-    height: 85vh;
-    border-radius: 20px 20px 0 0;
+    background: var(--surface-solid);
+    width: 90%;
+    max-width: 450px;
+    height: auto;
+    max-height: 80vh;
+    border-radius: 30px;
+    padding: 0;
     display: flex;
     flex-direction: column;
-    transform: translateY(100%);
-    transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.1);
+    transform: scale(0.9);
+    transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
 }
 
 .modal.active .modal-content {
-    transform: translateY(0);
+    transform: scale(1);
 }
 
 .modal-header {
-    padding: 1.2rem 1.5rem;
-    border-bottom: 1px solid var(--color-bg-secondary);
+    padding: 1.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
 .modal-header h2 {
-    font-family: var(--font-serif);
-    font-size: 1.4rem;
-    color: var(--color-text-primary);
+    font-family: 'Dancing Script', cursive;
+    font-size: 2.2rem;
+    color: var(--primary);
 }
 
 .btn-close {
-    background: none;
+    background: rgba(0, 0, 0, 0.05);
     border: none;
-    color: var(--color-text-secondary);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 1.5rem;
     cursor: pointer;
+    color: var(--text-secondary);
 }
 
 .modal-body {
@@ -487,114 +495,76 @@ body {
     flex: 1;
 }
 
-/* TARJETAS */
 .memory-card {
-    background: var(--color-surface);
-    border-radius: var(--radius-md);
-    padding: 1.2rem;
+    background: var(--surface);
+    padding: 1.5rem;
+    border-radius: 24px;
     margin-bottom: 1rem;
-    border: 1px solid var(--color-bg-secondary);
-    box-shadow: var(--shadow-sm);
-    position: relative;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.memory-card.read {
-    border-left: 4px solid var(--color-accent);
-}
-
-.memory-card-header {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    margin-bottom: 0.8rem;
+[data-theme="dark"] .memory-card {
+    background: rgba(255, 255, 255, 0.08);
 }
 
 .memory-card-title {
-    font-size: 1.1rem;
     font-weight: 700;
-    flex: 1;
-    color: var(--color-text-primary);
+    color: var(--primary);
+    margin-bottom: 0.5rem;
 }
 
-.memory-card-preview {
-    color: var(--color-text-secondary);
-    font-size: 0.95rem;
-    line-height: 1.5;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-.memory-actions {
-    margin-top: 1rem;
-    padding-top: 0.8rem;
-    border-top: 1px dashed var(--color-bg-secondary);
-    display: flex;
-    justify-content: flex-end;
-    gap: 1rem;
-}
-
-.action-btn {
-    background: none;
-    border: none;
-    font-size: 1.2rem;
-    cursor: pointer;
-}
-
-/* DETALLE */
-.memory-detail {
+.bounce-icon {
+    font-size: 5rem;
     text-align: center;
-    padding-bottom: 2rem;
-}
-
-#detailIcon {
-    font-size: 4rem;
     margin-bottom: 1rem;
     display: block;
-    animation: bounce 2s infinite;
+    animation: floatBubble 3s infinite;
 }
 
 #detailTitle {
-    font-family: var(--font-serif);
-    font-size: 2rem;
-    margin-bottom: 1.5rem;
-    line-height: 1.2;
-    color: var(--color-accent);
+    font-family: 'Dancing Script', cursive;
+    font-size: 2.5rem;
+    text-align: center;
+    color: var(--primary);
+    margin-bottom: 1rem;
 }
 
 #detailContent {
-    font-size: 1.1rem;
     line-height: 1.8;
-    color: var(--color-text-secondary);
-    text-align: left;
+    font-size: 1.1rem;
+    text-align: center;
     white-space: pre-wrap;
 }
 
-/* Toggles */
 .form-mode-toggle {
     display: flex;
-    margin-bottom: 1rem;
-    background: var(--color-bg-secondary);
-    padding: 4px;
-    border-radius: 8px;
+    gap: 10px;
+    margin-bottom: 1.5rem;
+    background: rgba(0, 0, 0, 0.05);
+    padding: 5px;
+    border-radius: 15px;
 }
 
 .mode-btn {
     flex: 1;
+    padding: 10px;
     border: none;
-    padding: 8px;
-    border-radius: 6px;
     background: transparent;
+    color: var(--text-secondary);
+    border-radius: 12px;
+    font-weight: 700;
     cursor: pointer;
-    font-weight: 600;
-    color: var(--color-text-secondary);
 }
 
 .mode-btn.active {
-    background: var(--color-surface);
-    color: var(--color-accent);
-    box-shadow: var(--shadow-sm);
+    background: #fff;
+    color: var(--primary);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.hidden {
+    display: none;
 }
 
 .form-mode {
@@ -603,97 +573,4 @@ body {
 
 .form-mode.active {
     display: block;
-}
-
-/* ANIMACIONES */
-@keyframes bounce {
-
-    0%,
-    100% {
-        transform: translateY(0);
-    }
-
-    50% {
-        transform: translateY(-10px);
-    }
-}
-
-@keyframes float {
-
-    0%,
-    100% {
-        transform: translateY(0) rotate(0deg);
-    }
-
-    50% {
-        transform: translateY(-20px) rotate(5deg);
-    }
-}
-
-@keyframes fadeInDown {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* MEDIA QUERIES */
-@media (min-width: 769px) {
-    .modal {
-        align-items: center;
-    }
-
-    .modal-content {
-        max-width: 500px;
-        height: auto;
-        max-height: 80vh;
-        border-radius: var(--radius-lg);
-        transform: scale(0.9);
-        opacity: 0;
-    }
-
-    .modal.active .modal-content {
-        transform: scale(1);
-        opacity: 1;
-    }
-
-    .btn-memories {
-        width: auto;
-        left: auto;
-        right: 2rem;
-        bottom: 2rem;
-        transform: none;
-    }
-
-    .spotify-player {
-        width: 300px;
-        left: 2rem;
-        bottom: 2rem;
-        transform: none;
-    }
-
-    .btn-add-memory {
-        top: 100px;
-        bottom: auto;
-    }
-}
-
-@media (max-width: 768px) {
-    .spotify-player {
-        bottom: 85px;
-        max-width: 95%;
-    }
-
-    .spotify-player iframe {
-        height: 80px !important;
-    }
-
-    .main-content {
-        padding-bottom: 180px;
-    }
 }
