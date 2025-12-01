@@ -307,22 +307,6 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 2rem;
-    pointer-events: auto;
-    background: var(--bg-gradient);
-}
-
-.login-title {
-    font-family: 'Dancing Script', cursive;
-    font-size: 4.5rem;
-    color: #fff;
-    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    margin-bottom: 0;
-}
-
-.login-subtitle {
-    color: rgba(255, 255, 255, 0.9);
-    margin-bottom: 2rem;
     font-size: 1.2rem;
 }
 

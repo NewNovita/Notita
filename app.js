@@ -312,4 +312,24 @@ document.addEventListener('DOMContentLoaded', () => {
     window.app = new App();
     window.deleteItem = async (id) => { if (confirm("¿Borrar?")) { await window.app.memories.delete(id); await window.app.refreshData(); } };
     window.editItem = (id) => { window.app.editMemory(id); };
+
+    // Typewriter effect
+    const title = document.querySelector('.login-title');
+    if (title) {
+        const text = title.textContent;
+        title.textContent = '';
+        title.classList.add('typing-cursor');
+        let i = 0;
+        const type = () => {
+            if (i < text.length) {
+                title.textContent += text.charAt(i);
+                i++;
+                setTimeout(type, 200); // Speed of typing
+            } else {
+                // Keep cursor blinking for a bit then maybe remove? Or keep it.
+                // title.classList.remove('typing-cursor'); 
+            }
+        };
+        setTimeout(type, 500); // Start delay
+    }
 });
