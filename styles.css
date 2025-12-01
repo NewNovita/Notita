@@ -35,7 +35,7 @@
     --bubble-bg: rgba(255, 255, 255, 0.15);
     --bubble-border: 1px solid rgba(255, 192, 203, 0.3);
 
-    /* Input en noche: Oscuro Sólido (CORREGIDO PARA QUE NO SEA BLANCO) */
+    /* Input en noche: Oscuro Sólido */
     --input-bg: #322335;
     --input-text: #fff;
 }
@@ -297,10 +297,60 @@ body {
     }
 }
 
-border-radius: 30px;
-width: 100%;
-max-width: 350px;
-box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+/* =========================================
+   4. UI GENERAL
+   ========================================= */
+/* Login */
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    pointer-events: auto;
+    background: var(--bg-gradient);
+}
+
+.login-title {
+    font-family: 'Dancing Script', cursive;
+    font-size: 4.5rem;
+    color: #fff;
+    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 0;
+    min-height: 1.2em;
+}
+
+.typing-cursor {
+    border-right: 3px solid #fff;
+    animation: blink 0.75s step-end infinite;
+}
+
+@keyframes blink {
+
+    from,
+    to {
+        border-color: transparent
+    }
+
+    50% {
+        border-color: #fff
+    }
+}
+
+.login-subtitle {
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 2rem;
+    font-size: 1.2rem;
+}
+
+.login-form {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 2.5rem;
+    border-radius: 30px;
+    width: 100%;
+    max-width: 350px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
 }
 
 /* Inputs bonitos y legibles */
@@ -327,9 +377,7 @@ select,
     border-radius: 15px;
     border: 2px solid var(--border-color);
     background: var(--input-bg);
-    /* Sólido en noche */
     color: var(--input-text);
-    /* Blanco en noche */
     font-family: 'Outfit', sans-serif;
     font-size: 1rem;
     outline: none;
