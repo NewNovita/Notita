@@ -135,7 +135,7 @@ class App {
         this.editingId = null;
         this.init();
     }
-    init() {
+    async init() {
         document.getElementById('loginBtn').onclick = () => this.handleLogin();
         document.getElementById('logoutBtn').onclick = () => { this.auth.logout(); window.location.reload(); };
 
@@ -153,6 +153,14 @@ class App {
         });
 
         document.getElementById('addMemoryForm').onsubmit = (e) => this.handleSave(e);
+
+        // Check for existing session
+        const savedUser = this.auth.checkSession();
+        if (savedUser) {
+            this.currentUser = savedUser;
+            this.updateUIForLogin(savedUser);
+            await this.refreshData();
+        }
     }
 
     async handleLogin() {
@@ -161,12 +169,16 @@ class App {
         try {
             const user = await this.auth.login(u, p);
             this.currentUser = user;
-            document.getElementById('loginScreen').classList.remove('active');
-            document.getElementById('mainScreen').classList.add('active');
-            document.getElementById('userBadge').textContent = user.displayName;
-            if (this.auth.isAdmin()) document.getElementById('addMemoryBtn').classList.remove('hidden');
+            this.updateUIForLogin(user);
             await this.refreshData();
         } catch (e) { alert(e.message); }
+    }
+
+    updateUIForLogin(user) {
+        document.getElementById('loginScreen').classList.remove('active');
+        document.getElementById('mainScreen').classList.add('active');
+        document.getElementById('userBadge').textContent = user.displayName;
+        if (this.auth.isAdmin()) document.getElementById('addMemoryBtn').classList.remove('hidden');
     }
 
     async refreshData() {
@@ -257,12 +269,23 @@ class App {
 
 class AuthManager {
     constructor() { this.currentUser = null; }
+
+    checkSession() {
+        const saved = localStorage.getItem('lucinotes_user');
+        if (saved) {
+            this.currentUser = JSON.parse(saved);
+            return this.currentUser;
+        }
+        return null;
+    }
+
     async login(username, password) {
         username = username.toLowerCase().trim();
         if (username === 'admin') {
             try {
                 await signInWithEmailAndPassword(auth, "admin@lucinotes.com", password);
                 this.currentUser = { username: 'admin', role: 'admin', displayName: '👑 Admin' };
+                localStorage.setItem('lucinotes_user', JSON.stringify(this.currentUser));
                 return this.currentUser;
             } catch (e) { throw new Error("Contraseña incorrecta"); }
         } else {
@@ -271,12 +294,17 @@ class AuthManager {
             const data = d.data();
             if (data.password === password) {
                 this.currentUser = { username: data.username, role: data.role || 'normal', displayName: data.displayName || 'Lucianita' };
+                localStorage.setItem('lucinotes_user', JSON.stringify(this.currentUser));
                 return this.currentUser;
             } else { throw new Error("Contraseña incorrecta"); }
         }
     }
 
-    logout() { this.currentUser = null; signOut(auth).catch(() => { }); }
+    logout() {
+        this.currentUser = null;
+        localStorage.removeItem('lucinotes_user');
+        signOut(auth).catch(() => { });
+    }
     isAdmin() { return this.currentUser && this.currentUser.role === 'admin'; }
 }
 
