@@ -51,6 +51,7 @@ html {
     height: 100%;
     position: fixed;
     overflow: hidden;
+    overflow-x: hidden;
 }
 
 body {
@@ -58,16 +59,16 @@ body {
     background: var(--bg-gradient);
     background-attachment: fixed;
     color: var(--text-primary);
-    height: 100vh;
-    height: 100dvh;
-    width: 100vw;
+    height: 100%;
+    width: 100%;
     overflow: hidden;
+    overflow-x: hidden;
     position: fixed;
     top: 0;
     left: 0;
     transition: background 0.5s ease, color 0.5s ease;
     -webkit-text-size-adjust: 100%;
-    touch-action: pan-y;
+    touch-action: none;
 }
 
 /* =========================================
@@ -237,6 +238,30 @@ body {
 
 /* --- MÓVIL: Todo centrado abajo --- */
 @media (max-width: 768px) {
+
+    /* Ajustes de header para evitar desbordamiento */
+    .app-header {
+        padding: 0 1rem;
+    }
+
+    .app-title {
+        font-size: 2rem;
+    }
+
+    .header-actions {
+        gap: 5px;
+    }
+
+    .btn-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+    }
+
+    .user-badge {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.9rem;
+    }
 
     /* Botón Baúl: Abajo del todo (lo más importante) */
     .btn-memories {
