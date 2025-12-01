@@ -86,11 +86,10 @@ class MemoryManager {
         if (current.title && current.content) await this.add(current.title, current.content, 'random');
     }
     async delete(id) { await deleteDoc(doc(db, 'memories', id)); }
-    async updateProfile(username, displayName, password) {
-        const updates = {};
-        if (displayName) updates.displayName = displayName;
-        if (password) updates.password = password;
-        await updateDoc(doc(db, 'users', username), updates);
+    async update(id, title, content, icon) {
+        const updates = { title, content };
+        if (icon && icon !== 'random') updates.icon = icon;
+        await updateDoc(doc(db, 'memories', id), updates);
     }
 }
 
@@ -133,6 +132,7 @@ class App {
         this.memories = new MemoryManager();
         this.canvas = new MemoriesCanvas(this.memories);
         this.currentUser = null;
+        this.editingId = null;
         this.init();
     }
     init() {
@@ -141,7 +141,6 @@ class App {
 
         document.getElementById('myMemoriesBtn').onclick = () => this.openModal('memoriesModal');
         document.getElementById('addMemoryBtn').onclick = () => this.openModal('addMemoryModal');
-        document.getElementById('userBadge').onclick = () => this.openModal('profileModal');
 
         document.querySelectorAll('.btn-close').forEach(b => b.onclick = (e) => e.target.closest('.modal').classList.remove('active'));
 
@@ -154,7 +153,6 @@ class App {
         });
 
         document.getElementById('addMemoryForm').onsubmit = (e) => this.handleSave(e);
-        document.getElementById('profileForm').onsubmit = (e) => this.handleProfile(e);
     }
 
     async handleLogin() {
@@ -207,7 +205,7 @@ class App {
             <div class="memory-card read">
                 <div style="display:flex;justify-content:space-between;align-items:center">
                     <h3 class="memory-card-title">${m.icon} ${m.title}</h3>
-                    ${isAdmin ? `<button onclick="window.deleteItem('${m.id}')" style="background:none;border:none;cursor:pointer">🗑️</button>` : ''}
+                    ${isAdmin ? `<div><button onclick="window.editItem('${m.id}')" style="background:none;border:none;cursor:pointer;margin-right:8px">✏️</button><button onclick="window.deleteItem('${m.id}')" style="background:none;border:none;cursor:pointer">🗑️</button></div>` : ''}
                 </div>
                 <p class="memory-card-preview">${m.content}</p>
             </div>`).join('');
@@ -223,7 +221,14 @@ class App {
                 const t = document.getElementById('memoryTitle').value;
                 const c = document.getElementById('memoryContent').value;
                 const i = document.getElementById('memoryIcon').value;
-                if (t && c) await this.memories.add(t, c, i);
+                if (t && c) {
+                    if (this.editingId) {
+                        await this.memories.update(this.editingId, t, c, i);
+                        this.editingId = null;
+                    } else {
+                        await this.memories.add(t, c, i);
+                    }
+                }
             } else {
                 const text = document.getElementById('bulkText').value;
                 if (text) await this.memories.addBulk(text);
@@ -233,18 +238,17 @@ class App {
         finally { btn.textContent = "Guardar"; btn.disabled = false; }
     }
 
-    async handleProfile(e) {
-        e.preventDefault();
-        const name = document.getElementById('newDisplayName').value;
-        const pass = document.getElementById('newPassword').value;
-        if (name || pass) {
-            await this.auth.updateProfile(name, pass);
-            if (name) {
-                this.currentUser.displayName = name;
-                document.getElementById('userBadge').textContent = name;
-            }
-            alert("Perfil actualizado ✨"); this.closeAllModals();
-        }
+    editMemory(id) {
+        const m = this.memories.memories.find(x => x.id === id);
+        if (!m) return;
+        this.editingId = id;
+        document.getElementById('memoryTitle').value = m.title;
+        document.getElementById('memoryContent').value = m.content;
+        const sel = document.getElementById('memoryIcon');
+        sel.value = [...sel.options].some(o => o.value === m.icon) ? m.icon : 'random';
+        document.querySelector('[data-mode="single"]').click();
+        this.closeAllModals();
+        this.openModal('addMemoryModal');
     }
 
     openModal(id) { document.getElementById(id).classList.add('active'); }
@@ -271,17 +275,11 @@ class AuthManager {
             } else { throw new Error("Contraseña incorrecta"); }
         }
     }
-    async updateProfile(name, pass) {
-        if (!this.currentUser) return;
-        const updates = {};
-        if (name) updates.displayName = name;
-        if (pass && this.currentUser.role !== 'admin') updates.password = pass;
-        await updateDoc(doc(db, 'users', this.currentUser.username), updates);
-        if (name) this.currentUser.displayName = name;
-    }
+
     logout() { this.currentUser = null; signOut(auth).catch(() => { }); }
     isAdmin() { return this.currentUser && this.currentUser.role === 'admin'; }
 }
 
 window.deleteItem = async (id) => { if (confirm("¿Borrar?")) { await window.app.memories.delete(id); await window.app.refreshData(); } };
+window.editItem = (id) => { window.app.editMemory(id); };
 window.app = new App();
